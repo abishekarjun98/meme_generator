@@ -11,7 +11,6 @@
 			height: 10px;
 			border: 2px  solid rgba(0,0,0,0.5); 
 			border-radius: 12px;
-
 		}
 		#canvas
 		{
@@ -26,29 +25,28 @@
 			margin-top: 50px;
 			float: left;
 		}
+		#link
+		{
+			text-decoration: none;
+			margin-top: 10px;
+
+		}
 	</style>
 </head>
 
-<p>Drag and Drop this Box on desired place on the Canvas and enter the text to be added in the text Box</p>
+<p>Drag and Drop this pointer on desired place on the Canvas and enter the text to be added in the text Box</p>
 <div draggable="true" id="dragme">
 </div>
 
 <div class="btn_grp">
 
-	<!--<input type="file" id="loc">
-		<button onclick="get_loc()" >Upload</button>-->
-
-		<!--<button onclick="save()">Save</button>-->
-
-		<button onclick="call_add()">Add Text</button>
-
-		<input type="text" id="content">
+		<input type="text" id="content" placeholder="Enter Text">
+		<button type="button" class="btn btn-info" onclick="call_add()">Add Text</button>
 		<br>
-		<a id="link" type="button" onclick="save2()">HAHAJA</a>
-		<br>
+		
 		<select id="text_values" name="Text">
 		</select>
-		<button onclick="removetext()">Remove Text</button>
+		<button class="btn btn-danger" onclick="removetext()">Remove Text</button>
 
 	</div>
 
@@ -56,8 +54,10 @@
 		
 		<!--<img src="img.jpg">-->
 		<canvas id="canvas" width="500" height="500">
-
 		</canvas>
+		<br>
+		<a id="link" type="button" onclick="save()" class="btn btn-info">Save Meme</a>
+		<br>
 
 
 		<script src="drag1.js"></script>
@@ -108,8 +108,8 @@ function addtext(x,y)
 	var ctx = canvas.getContext("2d");
 	ctx.font = "20px serif";
 	console.log(content);
-	var newx=x-215;
-	var newy=y-161;
+	var newx=x-233;
+	var newy=y-146;
 	var imgData = ctx.getImageData(newx-50,newy-50,100,100);
 	ctx.fillText(content, newx, newy);
 	text_count++;
@@ -117,7 +117,6 @@ function addtext(x,y)
 
 	var text_values = document.getElementById("text_values");
 	var option = document.createElement("Option");
-	//option.setAttribute("onclick","removetext("+text_count+")");
 	option.setAttribute("value",text_count);
 	option.text = content;
 	text_values.add(option);
@@ -137,7 +136,7 @@ function removetext()
 			var canvas = document.getElementById("canvas");
 			var ctx = canvas.getContext("2d");
 			ctx.putImageData(text_objs[i].data,text_objs[i].x-50,text_objs[i].y-50);
-
+			text_objs.splice(selected_index, 1);
 		}
 	}
 
@@ -157,21 +156,6 @@ function drawimg(src_url)
 
 
 function save()
-{ 
-				/*var link = document.getElementById('link');
-  link.setAttribute('download', 'MintyPaper.png');
-  link.setAttribute('href', canvas.toDataURL("image/png").replace("image/png", "image/octet-stream"));
-  link.click();*/
-
-
-  var image = canvas.toDataURL("image/png").replace("image/png");  // here is the most important part because if you dont replace you will get a DOM 18 exception.
-
-
-  window.location.href=image; 
-}
-
-
-function save2()
 {
 	var link = document.getElementById('link');
   link.setAttribute('download', 'Meme.png');
@@ -181,16 +165,12 @@ function save2()
 
 
 
-//drawimg("img2.jpg");
-
-
 async function getdata(url,num)
 {
 	const response=await fetch(url);
 	const json=await response.json();
 	var src_url= json.data.memes[num].url;
 
-	//console.log(json);
 	drawimg(src_url);
 
 }
