@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		#dragme { 
+			position:  absolute;
+			left: 10;
+			top: 10; 
+			width: 10px; 
+			border: 2px  solid rgba(0,0,0,0.5); 
+			border-radius: 4px; padding: 8px;
+		}
+		#canvas
+		{
+			width: 500px;
+			height: 500px;
+			background-color: white;
+			border-style: solid;
+			margin-top: 100px;
+			margin-left: -50px;
+		}
+		.btn_grp
+		{
+			margin-top: 50px;
+			float: left;
+		}
+	</style>
+</head>
+
+<p>Drag and Drop this Box on desired place on the Canvas and enter the text to be added in the text Box</p>
+<div draggable="true" id="dragme">
+</div>
+
+<div class="btn_grp">
+
+	<input type="file" id="loc">
+	<button onclick="get_loc()" >Upload</button>
+
+	<button onclick="save()">Save</button>
+
+	<button onclick="call_add()">Add Text</button>
+
+	<input type="text" id="content">
+
+</div>
+
+<body>
+	<!--<a id="link" onclick="savi()">save</a>-->
+	<!--<img src="img.jpg">-->
+	<canvas id="canvas">
+		
+	</canvas>
+
+
+	<script src="drag1.js"></script>
+	<script>
+
+		var x;
+		var y;
+
+var url="https://api.imgflip.com/get_memes";
+var rnd_index = Math.floor(Math.random() * 100); 
+getdata(url,rnd_index);
+
+
+//make_base();
+		function getcoords(ax,ay)
+		{
+			x=ax;
+			y=ay;
+			console.log(x+"xcoord");
+			console.log(y+"ycoord");
+		}
+
+
+		function call_add()
+		{
+			addtext(x,y);
+		}
+		
+		function get_loc()
+		{
+			var loc=document.getElementById("loc").files[0].name;
+			console.log(loc);
+
+			
+		}
+		var canvas = document.getElementById('canvas'),
+		context = canvas.getContext('2d');
+
+
+var text_objs=[];
+
+
+		function addtext(x,y)
+		{
+			
+			var content=document.getElementById("content").value;
+			var canvas = document.getElementById("canvas");
+			var ctx = canvas.getContext("2d");
+			ctx.font = "30px Arial";
+			ctx.fillText(content, x-563, y-180);
+			context.beginPath();
+
+			text_objs.push({x:x,y:y,text:content});
+
+			console.log(text_objs);
+
+		}
+
+		function drawimg(src_url)
+		{
+			image = new Image();
+			image.src = src_url;
+			image.onload = function(){
+				context.drawImage(image, 0, 0,300,150);
+			}
+
+		}
+
+
+		
+		function save()
+		{ 
+				/*var link = document.getElementById('link');
+  link.setAttribute('download', 'MintyPaper.png');
+  link.setAttribute('href', canvas.toDataURL("image/png").replace("image/png", "image/octet-stream"));
+  link.click();*/
+
+
+  var image = canvas.toDataURL("image/png").replace("image/png");  // here is the most important part because if you dont replace you will get a DOM 18 exception.
+
+
+  window.location.href=image; 
+}
+
+
+
+
+async function getdata(url,num)
+{
+const response=await fetch(url);
+const json=await response.json();
+var src_url= json.data.memes[num].url;
+
+console.log(json);
+drawimg(src_url);
+}
+
+</script>
+</body>
+</html>
