@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 	<style>
 		#dragme { 
 			position:  absolute;
 			left: 10;
 			top: 10; 
 			width: 10px; 
+			height: 10px;
 			border: 2px  solid rgba(0,0,0,0.5); 
-			border-radius: 4px; padding: 8px;
+			border-radius: 12px;
+
 		}
 		#canvas
 		{
-			width: 500px;
-			height: 500px;
+			
 			background-color: white;
 			border-style: solid;
 			margin-top: 100px;
@@ -33,95 +35,129 @@
 
 <div class="btn_grp">
 
-	<input type="file" id="loc">
-	<button onclick="get_loc()" >Upload</button>
+	<!--<input type="file" id="loc">
+		<button onclick="get_loc()" >Upload</button>-->
 
-	<button onclick="save()">Save</button>
+		<!--<button onclick="save()">Save</button>-->
 
-	<button onclick="call_add()">Add Text</button>
+		<button onclick="call_add()">Add Text</button>
 
-	<input type="text" id="content">
+		<input type="text" id="content">
+		<br>
+		<a id="link" type="button" onclick="save2()">HAHAJA</a>
+		<br>
+		<select id="text_values" name="Text">
+		</select>
+		<button onclick="removetext()">Remove Text</button>
 
-</div>
+	</div>
 
-<body>
-	<!--<a id="link" onclick="savi()">save</a>-->
-	<!--<img src="img.jpg">-->
-	<canvas id="canvas">
+	<body>
 		
-	</canvas>
+		<!--<img src="img.jpg">-->
+		<canvas id="canvas" width="500" height="500">
+
+		</canvas>
 
 
-	<script src="drag1.js"></script>
-	<script>
+		<script src="drag1.js"></script>
+		<script>
 
-		var x;
-		var y;
+			var x;
+			var y;
 
-var url="https://api.imgflip.com/get_memes";
-var rnd_index = Math.floor(Math.random() * 100); 
-getdata(url,rnd_index);
+			var url="https://api.imgflip.com/get_memes";
+			var rnd_index = Math.floor(Math.random() * 100); 
+			getdata(url,rnd_index);
 
 
 //make_base();
-		function getcoords(ax,ay)
-		{
-			x=ax;
-			y=ay;
-			console.log(x+"xcoord");
-			console.log(y+"ycoord");
-		}
+function getcoords(ax,ay)
+{
+	x=ax;
+	y=ay;
+	console.log(x+"xcoord");
+	console.log(y+"ycoord");
+}
 
 
-		function call_add()
-		{
-			addtext(x,y);
-		}
-		
-		function get_loc()
-		{
-			var loc=document.getElementById("loc").files[0].name;
-			console.log(loc);
+function call_add()
+{
+	addtext(x,y);
+}
 
-			
-		}
-		var canvas = document.getElementById('canvas'),
-		context = canvas.getContext('2d');
+function get_loc()
+{
+	var loc=document.getElementById("loc").files[0].name;
+	console.log(loc);
+
+
+}
+var canvas = document.getElementById('canvas'),
+context = canvas.getContext('2d');
 
 
 var text_objs=[];
+var text_count=0;
+
+function addtext(x,y)
+{
+
+	var content=document.getElementById("content").value;
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext("2d");
+	ctx.font = "20px serif";
+	console.log(content);
+	var newx=x-215;
+	var newy=y-161;
+	var imgData = ctx.getImageData(newx-50,newy-50,100,100);
+	ctx.fillText(content, newx, newy);
+	text_count++;
+	text_objs.push({index:text_count,x:newx,y:newy,text:content,data:imgData});
+
+	var text_values = document.getElementById("text_values");
+	var option = document.createElement("Option");
+	//option.setAttribute("onclick","removetext("+text_count+")");
+	option.setAttribute("value",text_count);
+	option.text = content;
+	text_values.add(option);
+
+}
 
 
-		function addtext(x,y)
+function removetext()
+{
+
+	var selected_index = document.getElementById("text_values").value;
+	
+	for (var i = 0; i < text_objs.length; i++) {
+		if(text_objs[i].index == selected_index)
 		{
-			
-			var content=document.getElementById("content").value;
+			console.log(selected_index);
 			var canvas = document.getElementById("canvas");
 			var ctx = canvas.getContext("2d");
-			ctx.font = "30px Arial";
-			ctx.fillText(content, x-563, y-180);
-			context.beginPath();
-
-			text_objs.push({x:x,y:y,text:content});
-
-			console.log(text_objs);
+			ctx.putImageData(text_objs[i].data,text_objs[i].x-50,text_objs[i].y-50);
 
 		}
+	}
 
-		function drawimg(src_url)
-		{
-			image = new Image();
-			image.src = src_url;
-			image.onload = function(){
-				context.drawImage(image, 0, 0,300,150);
-			}
+}
 
-		}
+function drawimg(src_url)
+{
+	image = new Image();
+	image.src = src_url;
+	image.crossOrigin = "Anonymous";
+	image.onload = function(){
+		context.drawImage(image, 0, 0,500,500);
+	}
+
+}
 
 
-		
-		function save()
-		{ 
+
+function save()
+{ 
 				/*var link = document.getElementById('link');
   link.setAttribute('download', 'MintyPaper.png');
   link.setAttribute('href', canvas.toDataURL("image/png").replace("image/png", "image/octet-stream"));
@@ -135,16 +171,28 @@ var text_objs=[];
 }
 
 
+function save2()
+{
+	var link = document.getElementById('link');
+  link.setAttribute('download', 'Meme.png');
+  link.setAttribute('href', canvas.toDataURL("image/png").replace("image/png", "image/octet-stream"));
+  
+}
+
+
+
+//drawimg("img2.jpg");
 
 
 async function getdata(url,num)
 {
-const response=await fetch(url);
-const json=await response.json();
-var src_url= json.data.memes[num].url;
+	const response=await fetch(url);
+	const json=await response.json();
+	var src_url= json.data.memes[num].url;
 
-console.log(json);
-drawimg(src_url);
+	//console.log(json);
+	drawimg(src_url);
+
 }
 
 </script>
