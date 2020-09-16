@@ -110,8 +110,8 @@ function addtext(x,y)
 	console.log(content);
 	var newx=x-233;
 	var newy=y-146;
-	var imgData = ctx.getImageData(newx-50,newy-50,100,100);
-	ctx.fillText(content, newx, newy);
+	var imgData = ctx.getImageData(newx-70,newy-70,200,100);
+	ctx.fillText(content, newx, newy,100);
 	text_count++;
 	text_objs.push({index:text_count,x:newx,y:newy,text:content,data:imgData});
 
@@ -126,7 +126,7 @@ function addtext(x,y)
 
 function removetext()
 {
-
+	var select_all =document.getElementById("text_values");
 	var selected_index = document.getElementById("text_values").value;
 	
 	for (var i = 0; i < text_objs.length; i++) {
@@ -135,8 +135,9 @@ function removetext()
 			console.log(selected_index);
 			var canvas = document.getElementById("canvas");
 			var ctx = canvas.getContext("2d");
-			ctx.putImageData(text_objs[i].data,text_objs[i].x-50,text_objs[i].y-50);
+			ctx.putImageData(text_objs[i].data,text_objs[i].x-70,text_objs[i].y-70);
 			text_objs.splice(selected_index, 1);
+			select_all.remove(select_all.selectedIndex);
 		}
 	}
 
